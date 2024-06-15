@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD JS</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow w-80 d-flex justify-content-center align-center">
+            <div class="card-header text-center">
+                <h2>CRUD Application</h2>
+            </div>
+            <div class="card-body">
+                <Form>
+                     <div class="form-group row">
+                    <label for="title" class="col-sm-2 col-form-label">Title</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="title" name="title" placeholder="Enter title">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="description" class="col-sm-2 col-form-label">Description</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="description" name="description" placeholder="Enter description">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-2">
+                        <button type="reset" class="btn btn-secondary btn-block" onclick="RESET_FORM()">Reset</button>
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="button" id="addButton" class="btn btn-danger btn-block" onclick="ADD_TASK()">Submit</button>
+                        <button type="button" id="updateButton" class="btn btn-success btn-block d-none">Update</button>
+                    </div>
+                </div>
+
+                </Form>
+               
+            </div>
+    </div>
+
+ 
+     <div class="card shadow mt-5">
+            <div class="card-header text-center">
+                <h3>Display Task</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group d-flex justify-content-end ">
+                    <input type="text" id="search"  class="form-control w-80" placeholder="Search by title or description">
+                     <button class="mx-2 btn-sm bg-secondary text-light fs-1 col-sm-2 col-xs-2" type="button" onclick="SEARCH_TASKS()">Serch</button>
+                </div>
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Index</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody id="displayTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+   
+        var storeData = [{ title: "IT", description: "Information Technology" }];
+
+        DISPLAY_ALL_DATA();
+
+        function ADD_TASK() {
+            let title = document.getElementById("title").value.trim();
+            let description = document.getElementById("description").value.trim();
+
+            if (!title || !description) {
+                alert(" Title And Description Are Required.");
+                return;
+            }
+          
+            
+
+            let data = {
+                title: title,
+                description: description,
+            };
+
+            storeData.push(data);
+            CLEAR_FORM();
+            DISPLAY_ALL_DATA();
+        }
+
+        function CLEAR_FORM() {
+            document.getElementById("title").value = "";
+            document.getElementById("description").value = "";
+        }
+
+        function DISPLAY_ALL_DATA(data = storeData) {
+            document.getElementById("displayTable").innerHTML = `
+                ${data.map((item, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.title}</td>
+                        <td>${item.description}</td>
+                        <td> <button class="btn btn-danger btn-sm-sm  btn-lg" onclick="EDIT_DATA(${index})">Edit</button></td>
+                        <td> <button class="btn btn-danger   btn-lg " onclick="DELETE_DATA(${index})">Delete</button></td>
+                    </tr>
+                `).join('')}`;
+
+            document.getElementById("addButton").classList.remove("d-none");
+        }
+
+        function DELETE_DATA(index) {
+            storeData.splice(index, 1);
+            DISPLAY_ALL_DATA();
+        }
+
+        function EDIT_DATA(index) {
+            let EditData = storeData[index];
+            document.getElementById("title").value = EditData.title;
+            document.getElementById("description").value = EditData.description;
+
+            document.getElementById("updateButton").classList.remove("d-none");
+            document.getElementById("addButton").classList.add("d-none");
+
+            document.getElementById("updateButton").setAttribute("onclick", `UPDATE_DATA(${index})`);
+        }
+
+        function UPDATE_DATA(index) {
+            let title = document.getElementById("title").value.trim();
+            let description = document.getElementById("description").value.trim();
+
+            storeData[index] = {
+                title: title,
+                description: description,
+            };
+
+            CLEAR_FORM();
+            DISPLAY_ALL_DATA();
+
+            document.getElementById("updateButton").classList.add("d-none");
+            document.getElementById("addButton").classList.remove("d-none");
+        }
+
+        function SEARCH_TASKS() {
+            let query = document.getElementById("search").value.trim().toLowerCase();
+            let filteredData = storeData.filter(item =>
+                item.title.toLowerCase().includes(query) ||
+                item.description.toLowerCase().includes(query)
+            );
+            DISPLAY_ALL_DATA(filteredData);
+        }
+
+    </script>
+
+</body>
+
+</html>
